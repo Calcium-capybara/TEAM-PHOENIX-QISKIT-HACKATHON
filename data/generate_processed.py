@@ -1,0 +1,188 @@
+"""
+generate_processed.py
+---------------------
+Derive the processed data artefacts from the raw benchmark JSON files and
+write them into data/processed/.
+
+Outputs
+-------
+weight_matrix_er6.npy      float64 (6, 6) symmetric adjacency-weight matrix
+                           (W[i,j] = edge weight if edge exists, 0 otherwise)
+edge_list_er6.npy          int64 (E, 3) array  [[u, v, w], ...]  (canonical order)
+cut_values_er6.npy         float64 (64,) diagonal of the cost Hamiltonian;
+                           index k = sum_i x_i * 2**i (Qiskit little-endian)
+cut_values_g6.npy          Same diagonal for the team auxiliary graph G6.
+metadata.json              Human-readable provenance record for all four files.
+
+Run from the repo root:
+    py -3.13 data/processed/generate_processed.py
+"""
+
+import json
+import pathlib
+import sys
+
+import numpy as np
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+REPO   = pathlib.Path(__file__).resolve().parents[2]
+RAW    = REPO / "data" / "raw"
+PROC   = REPO / "data" / "processed"
+PROC.mkdir(parents=True, exist_ok=True)
+
+ER6_JSON = RAW / "erdos_renyi_6.json"
+G6_JSON  = RAW / "weighted_maxcut_g6.json"
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def load_raw(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def build_weight_matrix(n, edges):
+    """Return symmetric float64 (n, n) weight matrix from edge list."""
+    W = np.zeros((n, n), dtype=np.float64)
+    for e in edges:
+        u, v, w = int(e["u"]), int(e["v"]), float(e["weight"])
+        W[u, v] = w
+        W[v, u] = w
+    return W
+
+
+def build_edge_array(edges):
+    """Return int64 (E, 3) array [[u, v, w], ...] in canonical (u<v) order."""
+    arr = []
+    for e in edges:
+        u, v, w = int(e["u"]), int(e["v"]), int(e["weight"])
+        if u > v:
+            u, v = v, u
+        arr.append([u, v, w])
+    arr.sort()
+    return np.array(arr, dtype=np.int64)
+
+
+def compute_cut_values(n, edges):
+    """
+    Compute C(x) for all 2**n basis states.
+    Index k = sum_i x_i * 2**i  (Qiskit little-endian / computational-basis order).
+    Returns float64 array of length 2**n.
+    """
+    k = np.arange(2**n, dtype=np.int64)
+    values = np.zeros(2**n, dtype=np.float64)
+    for e in edges:
+        u, v, w = int(e["u"]), int(e["v"]), float(e["weight"])
+        values += w * (((k >> u) ^ (k >> v)) & 1)
+    return values
+
+
+# ---------------------------------------------------------------------------
+# ER6 (official PS-O1 benchmark)
+# ---------------------------------------------------------------------------
+er6 = load_raw(ER6_JSON)
+n6  = er6["num_vertices"]          # 6
+er6_edges = er6["edges"]           # 9 edges
+
+W_er6    = build_weight_matrix(n6, er6_edges)
+E_er6    = build_edge_array(er6_edges)
+CV_er6   = compute_cut_values(n6, er6_edges)
+
+np.save(PROC / "weight_matrix_er6.npy", W_er6)
+np.save(PROC / "edge_list_er6.npy",     E_er6)
+np.save(PROC / "cut_values_er6.npy",    CV_er6)
+
+# Sanity-checks
+assert W_er6.shape == (6, 6),       "weight_matrix shape wrong"
+assert np.allclose(W_er6, W_er6.T), "weight_matrix not symmetric"
+assert E_er6.shape[1] == 3,         "edge_array must have 3 columns"
+assert CV_er6.shape == (64,),        "cut_values length wrong"
+assert float(CV_er6.max()) == er6["known_exact_optimum"]["cut_weight"], (
+    f"max cut mismatch: {CV_er6.max()} vs {er6['known_exact_optimum']['cut_weight']}"
+)
+print("[ok] ER6 -- weight_matrix_er6.npy, edge_list_er6.npy, cut_values_er6.npy")
+print("     n_edges=%d  total_weight=%.1f  C_opt=%.1f" % (
+    len(er6_edges), float(W_er6.sum() / 2), CV_er6.max()
+))
+
+# ---------------------------------------------------------------------------
+# G6 (team auxiliary benchmark)
+# ---------------------------------------------------------------------------
+g6 = load_raw(G6_JSON)
+n_g6    = g6["num_vertices"]       # 6
+g6_edges = g6["edges"]             # 9 edges
+
+CV_g6 = compute_cut_values(n_g6, g6_edges)
+np.save(PROC / "cut_values_g6.npy", CV_g6)
+
+assert CV_g6.shape == (64,)
+assert float(CV_g6.max()) == g6["known_exact_optimum"]["cut_weight"], (
+    f"max cut mismatch: {CV_g6.max()} vs {g6['known_exact_optimum']['cut_weight']}"
+)
+print("[ok] G6  -- cut_values_g6.npy")
+print("     n_edges=%d  total_weight=%.1f  C_opt=%.1f" % (
+    len(g6_edges), float(sum(e["weight"] for e in g6_edges)), CV_g6.max()
+))
+
+# ---------------------------------------------------------------------------
+# Metadata record
+# ---------------------------------------------------------------------------
+meta = {
+    "description": (
+        "Processed numeric arrays derived from data/raw/. "
+        "Generated by data/processed/generate_processed.py."
+    ),
+    "files": {
+        "weight_matrix_er6.npy": {
+            "shape": list(W_er6.shape),
+            "dtype": "float64",
+            "description": "Symmetric 6x6 adjacency-weight matrix for the official ER6 benchmark. "
+                           "W[i,j] = edge weight if edge (i,j) exists, 0 otherwise.",
+            "source_raw": "data/raw/erdos_renyi_6.json",
+        },
+        "edge_list_er6.npy": {
+            "shape": list(E_er6.shape),
+            "dtype": "int64",
+            "description": "Edge list [[u, v, w], ...] in canonical (u<v) order for ER6.",
+            "source_raw": "data/raw/erdos_renyi_6.json",
+        },
+        "cut_values_er6.npy": {
+            "shape": list(CV_er6.shape),
+            "dtype": "float64",
+            "description": (
+                "Cut value C(x) for all 64 basis states of ER6. "
+                "Index k = sum_i x_i * 2^i (Qiskit little-endian). "
+                "This is the diagonal of the QAOA cost Hamiltonian."
+            ),
+            "total_edge_weight": float(W_er6.sum() / 2),
+            "c_opt": float(CV_er6.max()),
+            "optimal_bitstrings_qiskit": er6["known_exact_optimum"]["optimal_bitstrings_vertex_order"],
+            "source_raw": "data/raw/erdos_renyi_6.json",
+        },
+        "cut_values_g6.npy": {
+            "shape": list(CV_g6.shape),
+            "dtype": "float64",
+            "description": (
+                "Cut value C(x) for all 64 basis states of the team auxiliary graph G6. "
+                "Index k = sum_i x_i * 2^i (Qiskit little-endian)."
+            ),
+            "total_edge_weight": float(sum(e["weight"] for e in g6_edges)),
+            "c_opt": float(CV_g6.max()),
+            "source_raw": "data/raw/weighted_maxcut_g6.json",
+        },
+    },
+    "generation": {
+        "script": "data/processed/generate_processed.py",
+        "python_version": sys.version,
+        "numpy_version": np.__version__,
+    },
+}
+
+with open(PROC / "metadata.json", "w", encoding="utf-8") as f:
+    json.dump(meta, f, indent=2)
+print("[ok] metadata.json")
+
+print("\nDone. Files written to:", str(PROC))
