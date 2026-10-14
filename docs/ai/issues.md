@@ -3,7 +3,7 @@
 
 **Team:** Phoenix  
 **Maintainers:** Member 1 (Lead), Member 3 (QAOA), Member 4 (Routing)  
-**Scope:** Log of genuine technical bugs, discrepancies, compiler quirks, and human-guided resolutions.
+**Scope:** Log of genuine technical bugs, discrepancies, compiler quirks, and guided resolutions.
 
 ---
 
