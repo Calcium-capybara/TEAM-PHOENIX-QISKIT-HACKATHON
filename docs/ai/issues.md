@@ -12,7 +12,7 @@
 - **Component:** `processors/processor_A.json`, `processor_A.py`, `docs/processor_handoff_notes.md`
 - **Symptom:** The generator script `processor_A.py` emitted a linear chain `[(0,1),(1,2),(2,3),(3,4)]`, while `processor_A.json` held a hub at 0 `[(0,1),(0,2),(0,3),(3,4)]`, and handoff notes described branching at 1 `[(0,1),(1,2),(1,3),(3,4)]`.
 - **Root Cause:** Multiple team members explored different candidate topologies without synchronizing back to the JSON generator.
-- **Team Resolution:** Cross-referenced Page 1 and Page 2 of the official Phase 1 Master Guide and its visual stage diagram (`Processor models across stages`). The visual diagram depicts a central top hub with 3 downward branches and a stem. The team formally ratified the T-shaped branching tree `[(0,1), (0,2), (0,3), (3,4)]`. Updated JSON, tests, and documentation.
+- **Team Resolution:** Cross-referenced the official Phase 1 Master Guide and its visual stage diagram (`Processor models across stages`). The visual diagram depicted a central top hub with 3 downward branches and a stem. The team formally ratified the T-shaped branching tree `[(0,1), (0,2), (0,3), (3,4)]`. Updated JSON, tests, and documentation.
 
 ---
 
