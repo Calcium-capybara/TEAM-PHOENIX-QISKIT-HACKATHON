@@ -34,3 +34,16 @@
   - Implemented Exploratory Connectivity Mismatch Score ($M$).
   - Built comprehensive 333-test automated test suite passing at 100%.
   - Fully verified all classical optima and numerical outputs.
+
+---
+
+### Technical Refinement & Architectural Ideology Synthesis (Sprint 4: Final Polish)
+- **Focus:** Comprehensive documentation of physical routing bottlenecks, Processor D design ideology, and end-to-end reproducibility.
+- **Milestones Completed:**
+  - Structured `report.md` into an authoritative technical report detailing the mathematical formulation, classical references, empirical compilation data, and routing analysis.
+  - Added dedicated illustrations of the physical challenges encountered on Processors A & B (qubit capacity threshold vs planar heavy-hex SWAP routing congestion).
+  - Formalized the architectural ideology and co-design principles of Processor D in `report.md`.
+  - Populated `data/processed/` with numpy matrices and cut-value diagonals for instantaneous reproducible loading.
+  - End-to-end verified that `main.ipynb` executes cleanly from top to bottom.
+
+
