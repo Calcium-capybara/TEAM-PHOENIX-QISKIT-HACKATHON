@@ -24,7 +24,7 @@ The project investigates **algorithm-architecture co-design**:
 
 ## 2. Benchmark Instance & Classical Baseline
 
-### Primary Benchmark: Programmatic Erdős–Rényi Instance (`data/raw/erdos_renyi_6.json`)
+### Primary Benchmark:
 Per the PS-O1 specification:
 ```python
 import networkx as nx
@@ -50,7 +50,6 @@ G = nx.erdos_renyi_graph(n=6, p=0.5, seed=42)
 - **Native Gate Basis & Noise Model:** `{rz, sx, x, cx}` with synthetic depolarizing rates $p_{1q}=0.1\%, p_{cx}=0.5\%, p_{\text{readout}}=1.0\%$.
 
 ### Hardware Compilation Summary
-*(Extracted from `results/tables/official_er6_benchmark_comparison.csv`)*
 
 | Architecture | QAOA Depth ($p$) | Compilation Status | Logical Depth | Logical CX | Compiled Depth | Compiled CX | Routing SWAPs | Best Cut | Exact Optimum | Approx Ratio ($\alpha$) |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -85,5 +84,4 @@ pip install -r requirements.txt
 jupyter notebook main.ipynb
 ```
 
-All benchmark figures in `results/figures/` and tables in `results/tables/` are dynamically reproduced by executing `main.ipynb`.
-
+All benchmark figures in `results/figures/` and tables in `results/tables/` are produced by executing `main.ipynb`.
