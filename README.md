@@ -3,7 +3,7 @@
 
 **Team:** Phoenix  
 **Problem Statement:** PS-O1 (Max-Cut on Weighted Graphs)  
-**Track:** Quantum Optimization (QAOA / QUBO)  
+**Track:** Quantum Optimization (QAOA)  
 
 ---
 
@@ -13,7 +13,7 @@ This project presents our Phase 2 work on **PS-O1: Quantum Optimization of Netwo
 
 Our team investigated how physical quantum chip layouts, limited qubit counts, and routing constraints affect the execution of QAOA. We tested the locked 6-vertex weighted graph benchmark (total weight 27.0) across three distinct hardware setups:
 - **Processor A:** 5-qubit tree layout (capacity-limited baseline).
-- **Processor B:** 9-qubit sparse heavy-hex layout (reference architecture).
+- **Processor B:** 9-qubit reference layout (sparse lattice with routing overhead).
 - **Processor D:** 9-qubit custom co-designed layout (developed to remove the SWAP bottlenecks seen on B).
 
 ### Key Results Summary Table
@@ -51,7 +51,7 @@ project/
 │   └── instance.json              # Locked PS-O1 problem instance extract
 ├── processors/
 │   ├── processor_A.json           # 5-qubit reference tree
-│   ├── processor_B.json           # 9-qubit heavy-hex reference
+│   ├── processor_B.json           # 9-qubit reference layout
 │   └── processor_D.json           # Validated 9-qubit custom co-designed topology
 ├── results/
 │   ├── tables/
@@ -95,7 +95,7 @@ pip install -r requirements.txt
 jupyter notebook main.ipynb
 ```
 
-The notebook executes all five objectives end-to-end in under 30 seconds on standard CPU hardware without manual code edits.
+The notebook executes all five objectives end-to-end in typically under 2 minutes on standard CPU hardware without manual code edits.
 
 ---
 
@@ -127,8 +127,8 @@ The official PS-O1 instance consists of a 6-vertex graph with 9 weighted edges:
 ### Processor A (Capacity Barrier)
 Processor A has 5 physical qubits, but our network graph problem has 6 vertices (needs 6 qubits). Following the Challenge Kit's explicit capacity rule, we do not truncate the graph or force-fit it. Instead, Processor A is properly reported as `executable: False`.
 
-### Processor B (Heavy-Hex Routing Overhead)
-Processor B uses a heavy-hex lattice with sparse connectivity. Because several interacting nodes lack direct physical connections, Qiskit's router must insert **1 SWAP gate** (adding 3 physical CX gates). This increases compiled circuit depth from 10 to **37** and raises physical CX count to **21**.
+### Processor B (Routing Overhead)
+Processor B uses a sparse 9-qubit reference lattice. Because several interacting nodes lack direct physical connections, Qiskit's router must insert **1 SWAP gate** (adding 3 physical CX gates). This increases compiled circuit depth from 10 to **37** and raises physical CX count to **21**.
 
 ### Processor D (Our Custom Co-Design)
 We engineered Processor D to eliminate the bottleneck seen on Processor B. By directly connecting the 9 problem edges across qubits 0–5 while keeping all node degrees $\le 4$ and connecting auxiliary qubits 6–8:
@@ -139,7 +139,9 @@ We engineered Processor D to eliminate the bottleneck seen on Processor B. By di
 
 ---
 
-## 6. Development Notes & Acknowledgements
+## 6. AI Tool Usage & Acknowledgements
 
-This implementation was developed by Team Phoenix for Qiskit Fall Fest 2026. General coding assistants and syntax linters were used during development strictly for code formatting, LaTeX equation drafting, and checking data table layouts against the hackathon kit templates. All algorithm design, Hamiltonian formulations, circuit mappings, hardware architecture trade-offs, and result analyses were formulated, tested, and validated directly by our team.
-
+Per hackathon policy, AI assistance declaration:
+- **AI Tools Used:** Claude Code (Claude Opus), Google Antigravity (Gemini), and Claude 3.7 Sonnet.
+- **Scope of Usage:** AI tools were used for code formatting, LaTeX equation drafting, documentation polishing, and verifying data table layouts against hackathon kit templates.
+- **Original Contributions:** All core algorithm designs, Hamiltonian formulations, QAOA circuit mappings, hardware architecture co-design of Processor D, bottleneck analysis, and conclusions were developed, evaluated, and verified by the team members.
