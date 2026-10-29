@@ -3,7 +3,7 @@
 
 **Team:** Phoenix  
 **Problem Statement:** PS-O1 (Max-Cut on Weighted Graphs)  
-**Track:** Quantum Optimization (QAOA)  
+**Track:** Quantum Optimization (QAOA / QUBO)  
 
 ---
 
