@@ -36,45 +36,12 @@ Our team investigated how physical quantum chip layouts, limited qubit counts, a
   * Ideal Fidelity: $F = 1.0000 \pm 0.0000$
   * Noisy Fidelity: $F = 0.9485 \pm 0.0025$
 
----
 
-## 2. Repository Layout
-
-```
-project/
-├── README.md                      # Team, PS-O1 setup, execution instructions, key results table
-├── main.ipynb                     # Complete reproducible notebook executing all objectives
-├── requirements.txt               # Pinned dependencies (Qiskit 1.4+, Qiskit-Aer 0.17+, NumPy, Scipy, NetworkX)
-├── qff_phase2.py                  # Official organizer starter module (kept strictly unchanged)
-├── instances.json                 # Official locked problem instances (kept strictly unchanged)
-├── data/
-│   └── instance.json              # Locked PS-O1 problem instance extract
-├── processors/
-│   ├── processor_A.json           # 5-qubit reference tree
-│   ├── processor_B.json           # 9-qubit reference layout
-│   └── processor_D.json           # Validated 9-qubit custom co-designed topology
-├── results/
-│   ├── tables/
-│   │   ├── results.csv            # Official kit format benchmark results table
-│   │   └── bell.csv               # Objective 1 Bell-state verification table
-│   └── figures/                   # PNG figures used in report and notebook
-│       ├── problem_graph_partition.png
-│       ├── architecture_topologies.png
-│       ├── circuit_metrics_comparison.png
-│       ├── convergence_curves.png
-│       ├── cut_distribution.png
-│       └── bell_fidelity.png
-├── report.md                      # Comprehensive Phase 2 technical report (Objectives 1–5)
-└── Phase One/                     # Preserved archive of all Phase 1 files and historical work
-```
-
----
-
-## 3. Setup & Execution Instructions
+## 2. Setup & Execution Instructions
 
 ### Environment Setup & Execution Options
 
-#### Option A: Using the Official QFF Laptop Setup (`C:\QFF`)
+#### Using the Official QFF Laptop Setup (`C:\QFF`)
 If you ran the official `QFF_2026_INSTALL_AND_TEST_WINDOWS.ps1` installer:
 ```powershell
 # Launch JupyterLab with the official hackathon environment
@@ -82,24 +49,11 @@ C:\QFF\.qff2026-venv\Scripts\jupyter-lab.exe
 # When opening main.ipynb, ensure the kernel is set to: Python (QFF 2026)
 ```
 
-#### Option B: Clean Independent Virtual Environment (Python 3.10–3.12)
-```powershell
-# 1. Create and activate a clean virtual environment
-python -m venv opt-env
-.\opt-env\Scripts\activate      # Windows (or: source opt-env/bin/activate on Unix)
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Launch and execute the complete reproducible experiment
-jupyter notebook main.ipynb
-```
-
 The notebook executes all five objectives end-to-end in typically under 2 minutes on standard CPU hardware without manual code edits.
 
 ---
 
-## 4. Problem Formulation & Methodology (PS-O1)
+## 3. Problem Formulation & Methodology (PS-O1)
 
 ### Locked Problem Graph
 The official PS-O1 instance consists of a 6-vertex graph with 9 weighted edges:
@@ -122,7 +76,7 @@ The official PS-O1 instance consists of a 6-vertex graph with 9 weighted edges:
 
 ---
 
-## 5. Processor Architectures & Routing Bottleneck Analysis
+## 4. Processor Architectures & Routing Bottleneck Analysis
 
 ### Processor A (Capacity Barrier)
 Processor A has 5 physical qubits, but our network graph problem has 6 vertices (needs 6 qubits). Following the Challenge Kit's explicit capacity rule, we do not truncate the graph or force-fit it. Instead, Processor A is properly reported as `executable: False`.
@@ -139,9 +93,9 @@ We engineered Processor D to eliminate the bottleneck seen on Processor B. By di
 
 ---
 
-## 6. AI Tool Usage & Acknowledgements
+## 5. AI Tool Usage & Acknowledgements
 
 Per hackathon policy, AI assistance declaration:
-- **AI Tools Used:** Claude Code (Claude Opus), Google Antigravity (Gemini), and Claude 3.7 Sonnet.
+- **AI Tools Used:** Google Antigravity (Gemini), and Claude 3.7 Sonnet.
 - **Scope of Usage:** AI tools were used for code formatting, LaTeX equation drafting, documentation polishing, and verifying data table layouts against hackathon kit templates.
 - **Original Contributions:** All core algorithm designs, Hamiltonian formulations, QAOA circuit mappings, hardware architecture co-design of Processor D, bottleneck analysis, and conclusions were developed, evaluated, and verified by the team members.
