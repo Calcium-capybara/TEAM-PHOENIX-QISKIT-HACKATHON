@@ -1,0 +1,36 @@
+{
+  "name": "Processor D",
+  "team": "Phoenix",
+  "problem_statement": "PS-O1",
+  "num_qubits": 9,
+  "edges": [
+    [0, 2],
+    [0, 3],
+    [0, 4],
+    [1, 4],
+    [1, 5],
+    [2, 3],
+    [2, 4],
+    [3, 4],
+    [3, 5],
+    [0, 6],
+    [6, 7],
+    [1, 7],
+    [7, 8],
+    [5, 8],
+    [2, 8]
+  ],
+  "basis_gates": [
+    "rz",
+    "sx",
+    "x",
+    "cx"
+  ],
+  "noise": {
+    "model": "official",
+    "p1": 0.001,
+    "p2": 0.005,
+    "p_readout": 0.01
+  },
+  "design_rationale": "Direct algorithm-architecture co-design: embeds the 6-vertex PS-O1 interaction graph natively with degree <= 4 while adding auxiliary nodes 6-8, completely eliminating the SWAP routing bottleneck (0 SWAPs vs 1 on B, depth 29 vs 37)."
+}
