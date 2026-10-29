@@ -13,7 +13,7 @@
 ### 1.1 Problem Statement & Real-World Context
 Network partitioning is a fundamental combinatorial optimization problem with widespread industrial applications in telecommunication routing, distributed computing clustering, circuit layout partitioning, and power grid islanding. 
 
-In **PS-O1**, the goal is to partition the vertices of a weighted graph $G = (V, E, w)$ into two disjoint subsets $S$ and $V \setminus S$ such that the aggregate weight of edges crossing the partition boundary is maximized.
+In **PS-O1**, the goal is to partition the vertices of a weighted graph $G = (V, E, w)$ into two disjoint subsets $S$ and $V \setminus S$ such that the aggregate weight of edges crossing the partition boundary is maximised. 
 
 ### 1.2 Mathematical Formulation & QUBO Mapping
 For an undirected weighted graph on $n = 6$ vertices with non-negative integer edge weights $w_{uv} \in \{1, \dots, 5\}$, each vertex $u$ is assigned a binary decision variable $x_u \in \{0, 1\}$, indicating subset membership:
@@ -182,3 +182,4 @@ Furthermore, the probability of measuring an optimal ground state under noise is
 
 ---
 *Technical report compiled by Team Phoenix for QFF 2026 Phase 2.*
+
