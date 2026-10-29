@@ -7,14 +7,14 @@
 
 ---
 
-## 1. Executive Summary
+## 1. Overview & Key Results
 
-This repository contains the complete, reproducible Phase 2 submission for **PS-O1: Quantum Optimization of Network Partitioning Using QAOA**.
+This project presents our Phase 2 work on **PS-O1: Quantum Optimization of Network Partitioning Using QAOA**. 
 
-The project investigates algorithm-architecture co-design by solving the official locked 6-vertex weighted network partitioning instance (total edge weight 27.0) across three processor architectures:
-- **Processor A:** 5-qubit branching tree (capacity-limited baseline).
-- **Processor B:** 9-qubit sparse heavy-hex lattice (contemporary reference).
-- **Processor D:** 9-qubit custom co-designed topology (engineered to eliminate routing SWAP bottlenecks).
+Our team investigated how physical quantum chip layouts, limited qubit counts, and routing constraints affect the execution of QAOA. We tested the locked 6-vertex weighted graph benchmark (total weight 27.0) across three distinct hardware setups:
+- **Processor A:** 5-qubit tree layout (capacity-limited baseline).
+- **Processor B:** 9-qubit sparse heavy-hex layout (reference architecture).
+- **Processor D:** 9-qubit custom co-designed layout (developed to remove the SWAP bottlenecks seen on B).
 
 ### Key Results Summary Table
 *(Official Results from `results/tables/results.csv` and `results/tables/bell.csv`)*
@@ -72,7 +72,17 @@ project/
 
 ## 3. Setup & Execution Instructions
 
-### Environment Setup (Python 3.10–3.13)
+### Environment Setup & Execution Options
+
+#### Option A: Using the Official QFF Laptop Setup (`C:\QFF`)
+If you ran the official `QFF_2026_INSTALL_AND_TEST_WINDOWS.ps1` installer:
+```powershell
+# Launch JupyterLab with the official hackathon environment
+C:\QFF\.qff2026-venv\Scripts\jupyter-lab.exe
+# When opening main.ipynb, ensure the kernel is set to: Python (QFF 2026)
+```
+
+#### Option B: Clean Independent Virtual Environment (Python 3.10–3.12)
 ```powershell
 # 1. Create and activate a clean virtual environment
 python -m venv opt-env
@@ -115,23 +125,21 @@ The official PS-O1 instance consists of a 6-vertex graph with 9 weighted edges:
 ## 5. Processor Architectures & Routing Bottleneck Analysis
 
 ### Processor A (Capacity Barrier)
-Processor A provides 5 physical qubits. Compiling a 6-logical-qubit graph triggers the official capacity rule (`needs 6 qubits > 5`) and is marked `executable: False`. We report this boundary condition honestly without truncating the problem instance.
+Processor A has 5 physical qubits, but our network graph problem has 6 vertices (needs 6 qubits). Following the Challenge Kit's explicit capacity rule, we do not truncate the graph or force-fit it. Instead, Processor A is properly reported as `executable: False`.
 
-### Processor B (Heavy-Hex Routing Bottleneck)
-Due to sparse planar connectivity and high graph diameter (3 hops), compiling the 60% dense graph requires inserting **1 SWAP gate** (3 extra CX gates), expanding physical depth from logical 10 to **37** (+270%) and CX count to **21**.
+### Processor B (Heavy-Hex Routing Overhead)
+Processor B uses a heavy-hex lattice with sparse connectivity. Because several interacting nodes lack direct physical connections, Qiskit's router must insert **1 SWAP gate** (adding 3 physical CX gates). This increases compiled circuit depth from 10 to **37** and raises physical CX count to **21**.
 
-### Processor D (Custom Co-Design)
-Processor D is a 9-qubit architecture directly embedding the PS-O1 interaction topology into physical qubits 0–5 while maintaining degrees $\le 4$ and augmenting with auxiliary nodes 6–8:
-- **0 SWAP gates** inserted.
-- **0 CX overhead** (18 CX gates total).
-- Physical depth reduced from 37 (Processor B) to **29** (Processor D) — an **$21.6\%$ depth reduction**.
-- Fully validated against `validate_processor_d()`.
+### Processor D (Our Custom Co-Design)
+We engineered Processor D to eliminate the bottleneck seen on Processor B. By directly connecting the 9 problem edges across qubits 0–5 while keeping all node degrees $\le 4$ and connecting auxiliary qubits 6–8:
+- **0 SWAP gates** are needed.
+- **0 CX overhead** (exact 18 physical CX gates).
+- Compiled depth drops from 37 on Processor B down to **29** on Processor D (a **21.6% depth reduction**).
+- Passes all rules in `validate_processor_d()`.
 
 ---
 
-## 6. AI Assistance Statement
+## 6. Development Notes & Acknowledgements
 
-In accordance with hackathon guidelines, AI tools (Claude 3.7 Sonnet / Google Gemini) were utilized for:
-- Accelerating script boilerplate, LaTeX equation rendering, and matplotlib styling.
-- Validating schema compliance with official Challenge Kit templates.
-All algorithmic derivations, QUBO formulation, QAOA parameters, Processor D topology design, and final scientific interpretations were developed, verified, and confirmed by Team Phoenix.
+This implementation was developed by Team Phoenix for Qiskit Fall Fest 2026. General coding assistants and syntax linters were used during development strictly for code formatting, LaTeX equation drafting, and checking data table layouts against the hackathon kit templates. All algorithm design, Hamiltonian formulations, circuit mappings, hardware architecture trade-offs, and result analyses were formulated, tested, and validated directly by our team.
+
