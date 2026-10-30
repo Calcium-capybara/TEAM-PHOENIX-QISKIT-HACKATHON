@@ -99,3 +99,4 @@ Per hackathon policy, AI assistance declaration:
 - **AI Tools Used:** Google Antigravity (Gemini), and Claude 3.7 Sonnet.
 - **Scope of Usage:** AI tools were used for code formatting, LaTeX equation drafting, documentation polishing, and verifying data table layouts against hackathon kit templates.
 - **Original Contributions:** All core algorithm designs, Hamiltonian formulations, QAOA circuit mappings, hardware architecture co-design of Processor D, bottleneck analysis, and conclusions were developed, evaluated, and verified by the team members.
+
